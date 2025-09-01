@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Update Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 1s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen font-sans">
+
+  <!-- Responsive Navbar -->
+  <nav class="fixed top-0 left-0 w-full z-50 bg-teal-300/50 backdrop-blur-md shadow-md p-4 text-white">
+    <div class="flex justify-between items-center max-w-7xl mx-auto">
+      <!-- Logo -->
+      <div class="text-xl font-bold">MyApp</div>
+
+      <!-- Hamburger Button (Mobile) -->
+      <button id="menu-btn" class="md:hidden focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <!-- Desktop Menu -->
+      <div id="menu" class="hidden md:flex space-x-6 items-center">
+        <a href="dashboard.html" class="hover:underline">Dashboard</a>
+        <a href="transaction.html" class="hover:underline">Transactions</a>
+        <a href="add-transaction.html" class="hover:underline">Add Transaction</a>
+        <a href="update-user.html" class="hover:underline text-xl">Update Profile</a>
+        <!-- <button onclick="logout()" class="hover:underline text-red-400">Logout</button> -->
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="md:hidden hidden mt-2 space-y-2 px-2">
+      <a href="dashboard.html" class="block hover:underline">Dashboard</a>
+      <a href="transaction.html" class="block hover:underline">Transactions</a>
+      <a href="add-transaction.html" class="block hover:underline">Add Transaction</a>
+      <a href="update-user.html" class="block hover:underline text-xl">Update Profile</a>
+      <!-- <button onclick="logout()" class="block text-red-400 hover:underline">Logout</button> -->
+    </div>
+  </nav>
+
+  <!-- Form -->
+  <div class="max-w-xl mx-auto mt-32 bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">Update Profile</h2>
+    <form id="updateForm" class="space-y-4">
+      <input type="text" name="name_user" id="name_user" placeholder="Name" required class="w-full px-4 py-2 border rounded bg-black bg-opacity-40 text-white" />
+      <input type="text" name="mobile" id="mobile" placeholder="Mobile" required class="w-full px-4 py-2 border rounded bg-black bg-opacity-40 text-white" />
+
+      <!-- Password with Eye Toggle -->
+      <div class="relative w-full">
+        <input type="password" name="password" id="password" placeholder="New Password" class="w-full px-4 py-2 border rounded bg-black bg-opacity-40 text-white pr-10" />
+        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-white">
+          <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
+      </div>
+
+      <input type="number" name="balance" id="balance" placeholder="Balance" required class="w-full px-4 py-2 border rounded bg-black bg-opacity-40 text-white" />
+
+      <select name="role" id="role" class="w-full px-4 py-2 border rounded bg-black text-white" required>
+        <option value="Stutants">Stutants</option>
+        <option value="Other_Work">Other_Work</option>
+      </select>
+
+      <!-- Submit with Spinner -->
+      <button type="submit" id="submitBtn" class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-700 flex justify-center items-center gap-2">
+        <span id="submitText">Update</span>
+        <svg id="spinner" class="w-5 h-5 animate-spin-slow hidden" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"></circle>
+          <path class="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+    <!-- ... baki body content ... -->
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
+      
+      <p class="text-sm">&copy; 2025 MyApp. All rights reserved.</p>
+      
+      <div class="flex space-x-6 mt-4 sm:mt-0">
+        <a href="#" class="hover:text-white transition">Privacy Policy</a>
+        <a href="#" class="hover:text-white transition">Terms of Service</a>
+        <a href="#" class="hover:text-white transition">Contact</a>
+      </div>
+      
+    </div>
+  </footer>
+</body>
+
+  <!-- Scripts -->
+  <script>
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+      alert("You're not logged in");
+      window.location.href = "index.html";
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // Toggle password visibility
+    function togglePassword() {
+      const input = document.getElementById("password");
+      const icon = document.getElementById("eyeIcon");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.99 9.99 0 011.623-3.082M6.318 6.318A9.957 9.957 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.957 9.957 0 01-4.187 4.899M6.318 6.318L3 3m0 0l3.318 3.318m0 0L21 21" />
+        `;
+      } else {
+        input.type = "password";
+        icon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+      }
+    }
+
+    // Fetch user data
+    async function loadUserData() {
+      try {
+        const res = await fetch(`https://jgqw00mq-4020.inc1.devtunnels.ms/user/api/get/${userId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Failed to load user data.");
+          return;
+        }
+
+        const user = data.getuser;
+        document.getElementById("name_user").value = user.name_user;
+        document.getElementById("mobile").value = user.mobile;
+        document.getElementById("balance").value = user.balance;
+        document.getElementById("role").value = user.role;
+
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        alert("Could not load user information.");
+      }
+    }
+
+    loadUserData();
+
+    // Submit form with spinner
+    document.getElementById("updateForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      const spinner = document.getElementById("spinner");
+      const submitText = document.getElementById("submitText");
+
+      submitText.textContent = "Updating...";
+      spinner.classList.remove("hidden");
+      submitBtn.disabled = true;
+
+      const data = {
+        name_user: e.target.name_user.value,
+        mobile: e.target.mobile.value,
+        password: e.target.password.value,
+        balance: e.target.balance.value,
+        role: e.target.role.value
+      };
+
+      try {
+        const res = await fetch(`https://jgqw00mq-4020.inc1.devtunnels.ms/user/api/update/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+          alert(result.error || "Update failed");
+        } else {
+          alert("Profile updated successfully.");
+          window.location.href = "dashboard.html";
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong.");
+      } finally {
+        submitText.textContent = "Update";
+        spinner.classList.add("hidden");
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Toggle mobile menu
+    document.getElementById("menu-btn").addEventListener("click", () => {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+    });
+  </script>
+</body>
+</html>

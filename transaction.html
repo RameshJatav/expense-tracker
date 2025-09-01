@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <style>
+    /* Custom Font for Signature */
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+    .font-cursive {
+      font-family: 'Pacifico', cursive;
+    }
+
+     /* Hide scrollbar but keep the content scrollable */
+    .scrollbar-hidden::-webkit-scrollbar {
+      display: none;  /* Hides the scrollbar */
+    }
+
+    .scrollbar-hidden {
+      -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+      scrollbar-width: none;  /* For Firefox */
+    }
+  </style>
+
+
+
+</head>
+<body class="bg-black text-white min-h-screen font-sans">
+
+  <!-- Responsive Navbar -->
+  <nav class="fixed top-0 left-0 w-full z-50 bg-teal-300/50 backdrop-blur-md shadow-md p-4 text-white">
+    <div class="flex justify-between items-center max-w-7xl mx-auto">
+      <div class="text-xl font-bold">MyApp</div>
+      <button id="menu-btn" class="md:hidden focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div id="menu" class="hidden md:flex space-x-6 items-center">
+        <a href="dashboard.html" class="hover:underline">Dashboard</a>
+        <a href="transaction.html" class="hover:underline text-xl " >Transactions</a>
+        <a href="add-transaction.html" class="hover:underline">Add Transaction</a>
+        <a href="update-user.html" class="hover:underline">Update Profile</a>
+        <!-- <button onclick="logout()" class="hover:underline text-red-400">Logout</button> -->
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden mt-2 space-y-2 px-2">
+      <a href="dashboard.html" class="block hover:underline">Dashboard</a>
+      <a href="transaction.html" class="block hover:underline text-xl">Transactions</a>
+      <a href="add-transaction.html" class="block hover:underline">Add Transaction</a>
+      <a href="update-user.html" class="block hover:underline">Update Profile</a>
+      <!-- <button onclick="logout()" class="block text-red-400 hover:underline">Logout</button> -->
+    </div>
+  </nav>
+
+  <!-- Transaction List -->
+  <div class="max-w-4xl mx-auto mt-28 bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6">Your Transactions</h2>
+    <div id="txnList" class="space-y-4 max-h-96 overflow-y-auto scrollbar-hidden">
+      <div id="loading" class="flex justify-center items-center py-10">
+        <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <span>Loading transactions...</span>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Modal for Transaction Details -->
+  <div id="txnModal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
+    <div class="bg-gray-900 text-white p-6 rounded-lg max-w-xl w-full shadow-xl relative">
+      <button onclick="closeModal()" class="absolute top-2 right-3 text-white text-2xl">&times;</button>
+      <h3 class="text-xl font-bold mb-4 text-yellow-300 ">Transaction Details</h3>
+      <div id="modalContent" class="space-y-2 text-sm"></div>
+
+      <!-- Watermark and Signature inside Modal -->
+      <img src="Watermark_Stamp.png" alt="Watermark" class="absolute bottom-2 right-2 w-24 h-24 opacity-80 pointer-events-none bg-transparent hover:filter hover:brightness-110" />
+      <p class="font-cursive text-blue-700 absolute bottom-2 right-10 w-24 h-8 text-center pointer-events-none hover:filter hover:brightness-110">Rameshjatav.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
+      <p class="text-sm">&copy; 2025 MyApp. All rights reserved.</p>
+      <div class="flex space-x-6 mt-4 sm:mt-0">
+        <a href="#" class="hover:text-white transition">Privacy Policy</a>
+        <a href="#" class="hover:text-white transition">Terms of Service</a>
+        <a href="#" class="hover:text-white transition">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+      alert("You're not logged in");
+      window.location.href = "index.html";
+    }
+
+    const txnList = document.getElementById("txnList");
+    const modal = document.getElementById("txnModal");
+    const modalContent = document.getElementById("modalContent");
+    const loading = document.getElementById("loading");
+
+    let transactions = [];         
+    let loadedIndex = 0;           
+    let pageSize = 6;              
+    let allFetched = false;        
+
+    async function fetchAllTransactions() {
+      loading.style.display = "flex";
+      try {
+        const res = await fetch(`https://jgqw00mq-4020.inc1.devtunnels.ms/transaction/api/user/${userId}`);
+        const data = await res.json();
+        loading.style.display = "none";
+
+        if (!res.ok || !data.transactions?.length) {
+          txnList.innerHTML = `<p>${data.error || 'No transactions found'}</p>`;
+          return;
+        }
+
+        transactions = data.transactions;
+        allFetched = true;
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load transactions.");
+        loading.style.display = "none";
+      }
+    }
+
+    function renderNextBatch() {
+      const nextItems = transactions.slice(loadedIndex, loadedIndex + pageSize);
+      nextItems.forEach(txn => {
+        const statusColor = txn.status.toLowerCase() === "success" ? "text-green-500 font-semibold"
+                          : txn.status.toLowerCase() === "failed" ? "text-red-500 font-semibold"
+                          : "text-gray-300";
+        const typeColor = txn.type.toLowerCase() === "credit" ? "text-green-400 font-semibold"
+                        : txn.type.toLowerCase() === "debit" ? "text-red-400 font-semibold"
+                        : "text-gray-300";
+
+        const txnDiv = document.createElement("div");
+        txnDiv.className = "p-4 bg-black bg-opacity-40 rounded shadow cursor-pointer hover:bg-opacity-60 transition";
+        txnDiv.innerHTML = `
+          <div class="relative">
+            <!-- Watermark in Card -->
+            <img src="Watermark_Stamp.png" alt="Watermark" class="absolute bottom-2 right-1 w-16 h-16 opacity-80 pointer-events-none bg-transparent hover:filter hover:brightness-110" />
+            <p class="font-cursive text-blue-700 absolute bottom-0 right-4 w-22 h-8 text-center pointer-events-none hover:filter hover:brightness-110">Rameshjatav.</p>
+
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+              <p><strong>Type:</strong> <span class="${typeColor}">${txn.type}</span></p>
+              <p class="mt-1 md:mt-0"><strong>Created At:</strong> ${new Date(txn.createdAt).toLocaleString()}</p>
+            </div>
+
+            <p><strong>Amount:</strong> ₹${txn.amount}</p>
+            <p><strong>Shop:</strong> ${txn.shop_name}</p>
+            <p><strong>Status:</strong> <span class="${statusColor}">${txn.status}</span></p>
+            <p class="text-xs text-yellow-300 mt-1">Click to view details >> </p>
+          </div>
+        `;
+
+        txnDiv.addEventListener("click", () => showModal(txn));
+        txnList.appendChild(txnDiv);
+      });
+      loadedIndex += pageSize;
+    }
+
+    function showModal(txn) {
+      modalContent.innerHTML = `
+        <p><strong>Mobile:</strong> ${txn.mobile}</p>
+        <p><strong>Amount:</strong> ₹${txn.amount}</p>
+        <p><strong>Balance:</strong> ₹${txn.balance}</p>
+        <p><strong>Before Balance:</strong> ₹${txn.before_balance}</p>
+        <p><strong>After Balance:</strong> ₹${txn.after_balance}</p>
+        <p><strong>Shop Name:</strong> ${txn.shop_name}</p>
+        <p><strong>Expensive:</strong> ${txn.expensive}</p>
+        <p><strong>Remark:</strong> ${txn.remark}</p>
+        <p><strong>Type:</strong> ${txn.type}</p>
+        <p><strong>Status:</strong> ${txn.status}</p>
+        <p><strong>Created At:</strong> ${new Date(txn.createdAt).toLocaleString()}</p>
+        <p><strong>Updated At:</strong> ${new Date(txn.updatedAt).toLocaleString()}</p>
+      `;
+      modal.classList.remove("hidden");
+    }
+
+    function closeModal() {
+      modal.classList.add("hidden");
+    }
+
+    // Responsive nav toggle
+    const menuBtn = document.getElementById("menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
+
+    async function startLoadingSequence() {
+      await fetchAllTransactions();
+      if (transactions.length === 0) return;
+
+      renderNextBatch();
+
+      const interval = setInterval(() => {
+        if (loadedIndex >= transactions.length) {
+          clearInterval(interval);
+        } else {
+          renderNextBatch();
+        }
+      }, 2000);
+    }
+
+    startLoadingSequence();
+  </script>
+</body>
+</html>
